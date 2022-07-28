@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   Patch,
@@ -7,15 +8,27 @@ import {
 import { GetUser } from '../auth/decorator'
 import { JwtGuard } from '../auth/guard'
 import { User } from '@prisma/client'
+import { EditUserDto } from './dto'
+import { UserService } from './user.service'
 
+@UseGuards(JwtGuard)
 @Controller('users')
 export class UserController {
-  @UseGuards(JwtGuard)
+  // eslint-disable-next-line no-useless-constructor
+  constructor (private userService: UserService) {}
   @Get('me')
   getMe (
     @GetUser() user: User,
     @GetUser('email') email: string
   ) {
     return user
+  }
+
+  @Patch()
+  editUser (
+    @GetUser('id') userId: number,
+    @Body() dto: EditUserDto
+  ) {
+    return this.userService.editUser(userId, dto)
   }
 }
